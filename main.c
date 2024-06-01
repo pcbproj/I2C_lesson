@@ -35,7 +35,13 @@ void GPIO_Init(void){
 
 
 void I2C_Init(void){
-  
+	RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;	// I2C1 module clocking enable
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;	// GPIO_B clocking enable PB8 = SCL PB9 = SDA
+	
+	GPIOB->MODER |= GPIO_MODER_MODE8_1;		// PB8 alternate function mode
+	GPIOB->MODER |= GPIO_MODER_MODE9_1;		// PB9 alternate function mode
+
+
 }
 
 void TIM1_Init(void){  // for APB2 frequency test
