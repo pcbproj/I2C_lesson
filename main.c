@@ -48,9 +48,6 @@ void TIM1_Init(void){  // for APB2 frequency test
 
 
 
-void TIM2_Init(void){ // for APB1 frequency test
-  RCC->APB2ENR |= RCC_APB1ENR_TIM2EN;	// TIM2 bus clocking enable
-}
 
 int main(void) {
 
@@ -67,7 +64,6 @@ int main(void) {
   
   
   
-  //SystemInit();
   RCC_Init();
   GPIO_Init();
   TIM1_Init();  
