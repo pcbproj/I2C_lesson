@@ -15,6 +15,8 @@ I2C project for lesson
 
 #define COUNT_1MS 1000
 
+#define EEPROM_DEV_ADDR uint8_t(0xA0) // адрес микросхемы EEPROM = 1010_0000 в бинарном виде. Используются старшие 7 бит
+
 void RCC_Init(void);
 
 
@@ -35,11 +37,26 @@ void GPIO_Init(void){
 
 
 void I2C_Init(void){
-	RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;	// I2C1 module clocking enable
-	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;	// GPIO_B clocking enable PB8 = SCL PB9 = SDA
+	RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;	// включение тактирования модуля I2C1 
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;	// включение тактирования порта GPIOB (PB8 = SCL, PB9 = SDA)
 	
-	GPIOB->MODER |= GPIO_MODER_MODE8_1;		// PB8 alternate function mode
-	GPIOB->MODER |= GPIO_MODER_MODE9_1;		// PB9 alternate function mode
+	// настройка выводов PB8 и PB9 для раоыт с модулем I2C1
+	GPIOB->MODER 	|= 	GPIO_MODER_MODE8_1;		// PB8 в режиме альтернативной функции
+	GPIOB->MODER 	|= 	GPIO_MODER_MODE9_1;		// PB9 в режиме альтернативной функции
+
+	GPIOB->PUPDR	&=	~(GPIO_PUPDR_PUPD8 | GPIO_PUPDR_PUPD9);	// явно прописываем отключение всех подтягивающих резисторов
+
+	GPIOB->AFR[1]	|=	GPIO_AFRH_AFRH0_2;	// PB8 выбрана альтернативная ф-ия  AF4 = I2C1
+	GPIOB->AFR[1]	|=	GPIO_AFRH_AFRH1_2;	// PB9 выбрана альтернативная ф-ия  AF4 = I2C1
+
+	// настройка модуля I2C1
+	// режим мастер
+	// скорость передачи 100 кбит/сек
+	// адресация устройств на шине I2C 7 битная
+	// адрес микросхемы памяти на шине I2C = 0xA0 = 0b1010_0000. Используются старшие 7 бит!
+	// используем прерывания от I2C1, для отслеживания состояния передачи на шине.
+
+
 
 
 }
@@ -71,8 +88,12 @@ int main(void) {
   
   
   RCC_Init();
+
   GPIO_Init();
-  TIM1_Init();  
+  
+  TIM1_Init();
+  
+  I2C_Init();
 
   
   //---- turn off leds ---------- 
