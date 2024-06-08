@@ -2,8 +2,8 @@
 I2C project for lesson
 по кнопке S1 происходит запись массива данных из 4-х  байт в I2C EEPROM, начиная с выбранной ячейки памяти.
 по кнопке S2 происходит изменение адреса в EEPROM циклически между 4-мя адресами.
-по кнопке s3 происходит чтение данных из выбранной ячейки EEPROM и запись данных в переменную, чтобы проверить в Debuger
-по кнопке s4 происходит чтение массива данных (4 байта) из EEPROM, начиная с выбранной ячейки памати и сохранение в массив
+по кнопке S3 происходит чтение данных из выбранной ячейки EEPROM и запись данных в переменную, чтобы проверить в Debuger
+по кнопке S4 происходит чтение массива данных (4 байта) из EEPROM, начиная с выбранной ячейки памати и сохранение в массив
 
 */
 
@@ -60,8 +60,10 @@ void I2C_Init(void){
   // настройка выводов PB8 и PB9 для работы с модулем I2C1
   GPIOB -> MODER 	|= 	GPIO_MODER_MODE8_1;		// PB8 в режиме альтернативной функции
   GPIOB -> MODER 	|= 	GPIO_MODER_MODE9_1;		// PB9 в режиме альтернативной функции
+  GPIOB -> OTYPER	|=	(GPIO_OTYPER_OT8 | GPIO_OTYPER_OT9);	// включение выводов PB8 PB9 в режим open-drain
 		   
-  GPIOB -> PUPDR	&=	~(GPIO_PUPDR_PUPD8 | GPIO_PUPDR_PUPD9);	// явно прописываем отключение всех подтягивающих резисторов
+  //GPIOB -> PUPDR	&=	~(GPIO_PUPDR_PUPD8 | GPIO_PUPDR_PUPD9);	// явно прописываем отключение всех подтягивающих резисторов
+  GPIOB -> PUPDR	|=	(GPIO_PUPDR_PUPD8_0 | GPIO_PUPDR_PUPD9_0);	// включаем подтягивающие pull_up резисторы
 															// хотя по умолчанию они и так отключены
   
   GPIOB -> AFR[1]	|=	GPIO_AFRH_AFRH0_2;	// для PB8 выбрана альтернативная ф-ия AF4 = I2C1
@@ -103,10 +105,8 @@ void I2C_Init(void){
 	T_Pclk1 = 1 / 42000000
 	CCR = 42000000 / (2*100000) = 210;
   */
-  //I2C1 -> CCR	|=	(210 << I2C_CCR_CCR_Pos);		// 100 КГц
-  //I2C1 -> CCR	|=	(260 << I2C_CCR_CCR_Pos);		// 80 кГц
-  I2C1 -> CCR	|=	(420 << I2C_CCR_CCR_Pos);		// 80 кГц
-  I2C1 -> CCR	&=	~(I2C_CCR_FS);	// сброс бита FS = работа на чатоте 100 кГц (Standard Mode)	
+  I2C1 -> CCR	|=	(210 << I2C_CCR_CCR_Pos);		// 100 КГц
+  I2C1 -> CCR	&=	~(I2C_CCR_FS);					// явный сброс бита FS = работа на чатоте 100 кГц (Standard Mode)	
   
   I2C1 -> TRISE |=  (43 << I2C_TRISE_TRISE_Pos);	// значение поля I2C1->CR2_FREQ + 1 = 42+1 = 43
   I2C1 -> OAR2  &=  ~(I2C_OAR1_ADDMODE);			// использование 7-ми битного адреса устройства на шине I2C
@@ -134,6 +134,14 @@ void I2C1_ACK_Gen_Enable(void){
 }
 
 
+void I2C1_Tx_DeviceADDR(char device_address, char RW_bit){
+	I2C1 -> DR = (device_address + RW_bit);				// отправить в I2C_DR адрес устройства и бит WR
+	while((I2C1 -> SR1 & I2C_SR1_ADDR) == 0){};	// ждем флаг I2C_SR1_ADDR = 1. Пока завершится передача байта адреса
+	(void)I2C1 -> SR1; 
+	(void)I2C1 -> SR2;	// очистка бита ADDR чтением регистров SR1 SR2
+
+}
+
 void I2C_Soft_EEPROM_Reset(void){
 	I2C1_StartGen();	// START-условие
 	I2C1->DR = 0xFF;	// 9 тактов SCL при SDA = 1 
@@ -150,15 +158,15 @@ void I2C_Soft_EEPROM_Reset(void){
 Таким образом, данные там могут быть повреждены / перезаписаны.
 */
 void I2C_Write(char start_addr, char data[], uint16_t data_len){ // запись в EEPROM указанного массива, указанной длинны, с указанного адреса  
-	while((I2C1 -> SR2 & I2C_SR2_BUSY) != 0){};	// проверить занятость шины I2C по флагу I2C_SR2_BUSY
+	
 	I2C1_ACK_Gen_Enable();						// включение генерации ACK
+	
+	while((I2C1 -> SR2 & I2C_SR2_BUSY) != 0){};	// проверить занятость шины I2C по флагу I2C_SR2_BUSY
+	
 	I2C1_StartGen();							// генерация START-условия
-	I2C1 -> DR = I2C_DEV_ADDR_WR;				// отправить в I2C_DR адрес устройства и бит WR
-
-	while((I2C1 -> SR1 & I2C_SR1_ADDR) == 0){};	// ждем флаг I2C_SR1_ADDR = 1. Пока завершится передача байта адреса
-	(void)I2C1 -> SR1; 
-	(void)I2C1 -> SR2;	// очистка бита ADDR чтением регистров SR1 SR2
-  
+	
+	I2C1_Tx_DeviceADDR(I2C_DEV_ADDR, I2C_WR_BIT);
+	
 	I2C1 -> DR = start_addr;	// отправить в I2C_DR адрес начальной ячейки памяти, куда хотим писать данные
 	while((I2C1 -> SR1 & I2C_SR1_TXE) == 0){};	// ждем флаг I2C_SR1_TXE = 1. Пока завершится передача байта данных
 
@@ -180,7 +188,7 @@ void I2C_Read(){  // чтение из EEPROM из указанной ячейк
 
   // генерация START-условия
 
-  // ожидание появления START-условия на шине I2C
+  
 
   // передача адреса устройства и бита WR
 
