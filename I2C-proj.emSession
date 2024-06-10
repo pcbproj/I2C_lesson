@@ -2,8 +2,9 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="264" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="main.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="273" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="main.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="461" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="main.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="469" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="main.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="476" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="main.c" useHWbreakpoint="false"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
@@ -54,8 +55,12 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Never">
-   <Watchpoint expression="i" name="i" radix="-1" linenumber="176" filename="main.c"/>
-   <Watchpoint expression="data_len" name="data_len" radix="-1" linenumber="176" filename="main.c"/>
+   <Watchpoint expression="i" name="i" radix="-1" linenumber="273" filename="main.c"/>
+   <Watchpoint expression="data_len" name="data_len" radix="-1" linenumber="273" filename="main.c"/>
+   <Watchpoint expression="i2c_rx_array" name="i2c_rx_array" radix="-1" linenumber="485" filename="main.c"/>
+   <Watchpoint expression="addr_offset" name="addr_offset" radix="11" linenumber="468" filename="main.c"/>
+   <Watchpoint expression="eeprom_addr" name="eeprom_addr" radix="11" linenumber="481" filename="main.c"/>
+   <Watchpoint expression="EEPROM_RD_START_ADDR" name="EEPROM_RD_START_ADDR" radix="11" linenumber="481" filename="main.c"/>
   </Watches>
  </Watch1>
  <Watch2>
@@ -68,8 +73,8 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="192" useTextEdit="1" path="main.c" left="0" selected="1" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="94" y="9" useTextEdit="1" path="RCC_init.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="28" y="9" useTextEdit="1" path="RCC_init.c" left="0" top="3" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="57" y="471" useTextEdit="1" path="main.c" left="0" selected="1" top="130" codecName="Default"/>
  </Files>
  <EMStudioWindow activeProject="I2C-proj" fileDialogDefaultFilter="*.asm;*.s;*.inc" autoConnectTarget="GDB Server" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/SEGGER_THUMB_Startup.s&#xa;&#xa;C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/STM32F4xx/Source/stm32f407xx_Vectors.s&#xa;&#xa;C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/STM32F4xx/Source/STM32F4xx_Startup.s&#xa;" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="1343"/>
 </session>

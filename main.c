@@ -8,32 +8,12 @@ I2C project for lesson
 */
 
 
-/*======== План написания ПО ==========
-++ 0. Программа в видео конечного флагового автомата. 
-	Каждое состояние - это определенная операция. 
-	Автомат крутится циклически. 
-	При появлении нужного флага, автомат переходит в определенное состояние и выполняет определенные действия.
-
-++ 1. написать ф-ию записи в EEPROM. 
-	++ проверить ее в железе через логический анализатор
-
-++ 2. написать ф-ию чтения из EEPROM. 
-	++ проверить ее в железе через логический анализатор
-
-++ 3. написать ф-ию опроса кнопок и выставление флагов операции.
-	++ по прерыванию от SysTick таймера опрашиваем кнопки
-
--- 4. написать конечный автомат. 
-	-- проверить  его работу в отладчике
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "stm32f407xx.h"
 
-#define	BTN_CHECK_TIME 100000000/10000
-#define	TIME1 500000
+//#define	BTN_CHECK_TIME 100000000/10000
+//#define	TIME1 500000
 #define	BTN_PRESS_CNT 4 
 
 #define COUNT_1MS 1000
@@ -80,6 +60,20 @@ char S3_cnt = 0;  // button S3 press couter
 char S1_state = 0;   // S1 state: 1 = pressed, 0 = released
 char S2_state = 0;   // S2 state: 1 = pressed, 0 = released
 char S3_state = 0;   // S3 state: 1 = pressed, 0 = released
+
+
+//FSM флаги состояния, по которым автомат переходит в состояния
+  char IDLE_flag = 0;
+  char EEPROM_WRITE_flag = 0;
+  char EEPROM_READ_flag = 0;
+  char ADDR_INC_flag = 0;
+
+	// флаги сброса состояний, чтобы не циклиться в одном состоянии придолгом сигнале с кнопки
+  char IDLE_out = 0;
+  char EEPROM_WRITE_out = 0;
+  char EEPROM_READ_out = 0;
+  char ADDR_INC_out = 0;
+
 
 void RCC_Init(void);
 
@@ -390,6 +384,17 @@ void I2C_Read(char start_addr, char rd_data[], uint16_t data_len){  // чтен�
  }
 
 
+void State_Flag_Gen(void){
+	if (!S1_state) EEPROM_WRITE_out = 0;
+	else EEPROM_WRITE_flag = S1_state & ~(EEPROM_WRITE_out);
+
+	if (!S2_state) ADDR_INC_out = 0;
+	else ADDR_INC_flag = S2_state & ~(ADDR_INC_out);
+
+	if (!S3_state) EEPROM_READ_out = 0;
+	else EEPROM_READ_flag = S3_state & ~(EEPROM_READ_out);
+	
+}
 
 
 void SysTick_Handler(void){		// прервание от Systick таймера, выполняющееся с периодом 1000 мкс
@@ -400,86 +405,84 @@ void SysTick_Handler(void){		// прервание от Systick таймера, 
 int main(void) {
 
   
-  enum states {
-    IDLE = 0,
-    EEPROM_WRITE,
-	EEPROM_READ,
-	ADDR_INC
-};
+	enum states {
+    	IDLE = 0,
+    	EEPROM_WRITE,
+		EEPROM_READ,
+		ADDR_INC
+	};
 
-  enum states FSM_state = IDLE;
+	enum states FSM_state = IDLE;
 
-  char IDLE_clear = 0;
-  char EEPROM_WRITE_clear = 0;
-  char EEPROM_READ_clear = 0;
-  char ADDR_INC_clear = 0;
-
-  //char 
-  
-  RCC_Init();
-
-  GPIO_Init();
-  
-  I2C_Init();
-
-  
-  SysTick_Config(168000);	// настройка SysTick таймера на время отрабатывания = 1 мс
+  	char eeprom_addr = 0;	// адрес чтения и записи в EEPROM
+  	char addr_offset = 0;	// смещение адреса EEPROM относительно основного адреса
+  	
+  	
+  	RCC_Init();
+  	
+  	GPIO_Init();
+  	
+  	I2C_Init();
+  	
+  	
+  	SysTick_Config(168000);	// настройка SysTick таймера на время отрабатывания = 1 мс
 								// 168000 = (частота_с_PLL / время_отрабатывания_таймера_в_мкс)
 								// 168000 = 168 МГц / 1000 мкс; 
-
-
    
-  LED_ON(NONE_LEDS);	//turn off leds
+	LED_ON(NONE_LEDS);	//turn off leds
   
-
-  //I2C_Write(EEPROM_WR_START_ADDR, i2c_tx_array, 4);	// запишем 4 байта в EEPROM c адреса EEPROM_WR_START_ADDR
-
-
 	while (1){
 		BTN_Check();	// проверка нажатия кнопок
+		
+		State_Flag_Gen();	// генерация флагов состояний для конечного автомата
 
+		
+		//======= FSM блок переключения по состояниям ========
+		if (EEPROM_WRITE_flag) FSM_state = EEPROM_WRITE;
+		else{
+			if (ADDR_INC_flag) FSM_state = ADDR_INC;
+			else { 
+				if (EEPROM_READ_flag) FSM_state = EEPROM_READ;
+				else FSM_state = IDLE;
+			}
+		}
 	  
-		// ======= FSM output logic =============
+		// ======= FSM блок отработки основной логики =============
 		switch(FSM_state){
 		case IDLE:	// мигание светодиодом LED3
 			LED_ON(ALL_LEDS);
+			
 			break;
 		
-		case EEPROM_WRITE:	// запись массива в EEPROM
+		case EEPROM_WRITE:	// запись массива в EEPROM по адресу eeprom_addr
 			LED_ON(1);
-			I2C_Write(EEPROM_WR_START_ADDR, i2c_tx_array, 8);	
+			I2C_Write(eeprom_addr, i2c_tx_array, EEPROM_WR_LEN);	
+			EEPROM_WRITE_out = 1;
 			FSM_state = IDLE;
 			break;
 
 		case ADDR_INC:		// увеличение адреса EEPROM на 1 в пределах (0x8 - 0x10)
 			LED_ON(2);
+			if(addr_offset < EEPROM_WR_LEN) addr_offset++;
+			else addr_offset = 0;
+			ADDR_INC_out = 1;
+			FSM_state = IDLE;
 			break;
 
-		case EEPROM_READ:	// чтение массива из EEPROM
+		case EEPROM_READ:	// чтение массива из EEPROM из адреса eeprom_addr
 			LED_ON(3);
+			I2C_Read(eeprom_addr, i2c_rx_array, EEPROM_RD_LEN);
+			EEPROM_READ_out = 1;
+			FSM_state = IDLE;
 			break;
 		
-		}
+		} // switch(FSM_state)
 
-	//======= FSM Next State Logic ========
-	 if (S1_state) FSM_state = EEPROM_WRITE;
-	else{
-		if (S2_state) FSM_state = ADDR_INC;
-		else { 
-			if (S3_state) FSM_state = EEPROM_READ;
-			//else FSM_state = IDLE;
-		}
-	}
-	
+		eeprom_addr = EEPROM_RD_START_ADDR + addr_offset;
 
-	
-
-//I2C_Read(EEPROM_RD_START_ADDR, i2c_rx_array, 4);
-
-	}
-
+	}	// while(1)
 	  
-}
+}	// main()
 
 
 
