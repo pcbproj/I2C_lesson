@@ -172,6 +172,41 @@ void I2C_Soft_EEPROM_Reset(void){
 }
 
 
+void LED_ON(char led_number){
+	switch (led_number){
+	case NONE_LEDS:		// All leds turned OFF
+		GPIOE -> BSRR |= GPIO_BSRR_BS13;  
+		GPIOE -> BSRR |= GPIO_BSRR_BS14;
+		GPIOE -> BSRR |= GPIO_BSRR_BS15;
+		break;
+
+	case 1: // LED1 включен, остальные выключены
+		GPIOE -> BSRR |= GPIO_BSRR_BR13;
+		GPIOE -> BSRR |= GPIO_BSRR_BS14;
+		GPIOE -> BSRR |= GPIO_BSRR_BS15;
+		break;
+	
+	case 2: // LED2 включен, остальные выключены
+		GPIOE -> BSRR |= GPIO_BSRR_BS13;
+		GPIOE -> BSRR |= GPIO_BSRR_BR14;
+		GPIOE -> BSRR |= GPIO_BSRR_BS15;
+		break;
+
+	case 3:	// LED3 включен, остальные выключены
+		GPIOE -> BSRR |= GPIO_BSRR_BS13;
+		GPIOE -> BSRR |= GPIO_BSRR_BS14;
+		GPIOE -> BSRR |= GPIO_BSRR_BR15;
+		break;
+	
+	case ALL_LEDS: // Все светодиоды включены
+		GPIOE -> BSRR |= GPIO_BSRR_BR13;
+		GPIOE -> BSRR |= GPIO_BSRR_BR14;
+		GPIOE -> BSRR |= GPIO_BSRR_BR15;
+		break;
+	}
+	
+	
+}
 
 
 /* в случае EEPROM AT24C02B можно за раз записать не более 8 байт данных. 
