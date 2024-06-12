@@ -192,9 +192,9 @@ void I2C1_ACK_Gen_Disable(void){
 // =====  программный ресет для EEPROM, но мы его не используем в работе ========
 void I2C_Soft_EEPROM_Reset(void){
 	I2C1_StartGen();	// START-условие
-	I2C1->DR = 0xFF;	// 9 тактов SCL при SDA = 1 
+	I2C1->DR = 0xFF;	// 9 тактов SCL при SDA = 1. 9-ый такт это NACK.
 	I2C1_StartGen();	// STAR-условие
-	I2C1_StopGen();		// STOP - условие
+	I2C1_StopGen();		// STOP-условие
 }
 
 
