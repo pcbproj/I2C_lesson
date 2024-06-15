@@ -444,8 +444,8 @@ int main(void) {
 		
 		} // switch(FSM_state)
 
-		eeprom_addr = EEPROM_RD_START_ADDR + addr_offset;
-		GPIOE -> ODR = ((~(addr_offset) & 0x07) << 13);
+		eeprom_addr = EEPROM_RD_START_ADDR + addr_offset;	// вычисление адреса в памяти через базовый адрес и смещение
+		GPIOE -> ODR = ((~(addr_offset) & 0x07) << 13);	// отображение значения смещения на светодиодах
 
 	}	// while(1)
 	  
