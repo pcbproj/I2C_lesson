@@ -17,8 +17,6 @@ I2C project for lesson
 #define	BTN_PRESS_CNT 4 
 
 
-#define NONE_LEDS	0
-#define ALL_LEDS	7
 
 // ------  адресация устройства на шине I2C ------------- 
 #define I2C_DEV_ADDR	0xA0 // адрес микросхемы EEPROM = 1010_0000 в бинарном виде. Используются старшие 7 бит
@@ -34,14 +32,7 @@ I2C project for lesson
 #define EEPROM_RD_START_ADDR	0x08	// чтение с 1 ячейки в страницу 2
 #define EEPROM_RD_LEN			4
 
-////--------- Флаги для конечного автомата -------------
-//#define IDLE			0
-//#define EEPROM_WRITE	1
-//#define EEPROM_READ		2
-//#define ADDR_INC		3
-
-
-#define BTN_CHECK_MS	10
+#define BTN_CHECK_MS			10
 
 
 char i2c_tx_array[8] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };	// Массив записываетмый в EEPROM
