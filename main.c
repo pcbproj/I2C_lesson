@@ -189,17 +189,6 @@ void I2C1_ACK_Gen_Disable(void){
 
 
 
-// =====  программный ресет для EEPROM, но мы его не используем в работе ========
-void I2C_Soft_EEPROM_Reset(void){
-	I2C1_StartGen();	// START-условие
-	I2C1->DR = 0xFF;	// 9 тактов SCL при SDA = 1. 9-ый такт это NACK.
-	I2C1_StartGen();	// STAR-условие
-	I2C1_StopGen();		// STOP-условие
-}
-
-
-
-
 void I2C1_Tx_DeviceADDR(char device_address, char RW_bit){
 	I2C1 -> DR = (device_address + RW_bit);				// отправить в I2C_DR адрес устройства и бит WR
 	while((I2C1 -> SR1 & I2C_SR1_ADDR) == 0){};	// ждем флаг I2C_SR1_ADDR = 1. Пока завершится передача байта адреса
