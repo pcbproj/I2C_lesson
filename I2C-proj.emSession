@@ -73,7 +73,8 @@
  </Watch4>
  <Files>
   <SessionOpenFile windowGroup="DockEditLeft" x="28" y="9" useTextEdit="1" path="RCC_init.c" left="0" top="3" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="413" useTextEdit="1" path="main.c" left="0" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="179" useTextEdit="1" path="main.c" left="0" selected="1" top="179" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="9188" useTextEdit="1" openedFrom="D:/Work/PCBteach/docs/02_MY_projects/MCU/02_Lessons_Projects_V2/03_I2C/I2C_lesson/main.c" path="STM32F4xx/Device/Include/stm32f407xx.h" left="0" top="9169" codecName="Default"/>
  </Files>
  <EMStudioWindow activeProject="I2C-proj" fileDialogDefaultFilter="*.asm;*.s;*.inc" autoConnectTarget="GDB Server" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/SEGGER_THUMB_Startup.s&#xa;&#xa;C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/STM32F4xx/Source/stm32f407xx_Vectors.s&#xa;&#xa;C:/work/pcbteach/02_myproj/MCU/02_I2C_less_proj/STM32F4xx/Source/STM32F4xx_Startup.s&#xa;" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="1343"/>
 </session>
