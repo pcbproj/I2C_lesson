@@ -169,9 +169,9 @@ Sections by address:
   080006fe-080006ff  HASH_RNG_IRQHandler                 2   2  Code  RX  stm32f407xx_Vectors.o
   08000700-08000701  FPU_IRQHandler                      2   2  Code  RX  stm32f407xx_Vectors.o
   08000702-08000825  SystemCoreClockUpdate             292   2  Code  RX  system_stm32f4xx.o
-  08000826-0800086d  I2C1_Tx_DeviceADDR                 72   2  Code  RX  main.o
-  0800086e-08000941  I2C_Read                          212   2  Code  RX  main.o
-  08000942-08000a79  BTN_Check                         312   2  Code  RX  main.o
+  08000826-0800095d  BTN_Check                         312   2  Code  RX  main.o
+  0800095e-080009a5  I2C1_Tx_DeviceADDR                 72   2  Code  RX  main.o
+  080009a6-08000a79  I2C_Read                          212   2  Code  RX  main.o
   08000a7a-08000b29  State_Flag_Gen                    176   2  Code  RX  main.o
   08000b2a-08000b39  SysTick_Handler                    16   2  Code  RX  main.o
   08000b3a-08000c15  RCC_Init                          220   2  Code  RX  RCC_init.o
@@ -219,7 +219,7 @@ Function symbols by name:
   Symbol name                   Address        Size  Align  Type  Bd  Object File
   -------------------------  ----------  ----------  -----  ----  --  -----------
   ADC_IRQHandler             0x08000685                  2  Code  Wk  stm32f407xx_Vectors.o
-  BTN_Check                  0x08000943         312      2  Code  Gb  main.o
+  BTN_Check                  0x08000827         312      2  Code  Gb  main.o
   BusFault_Handler           0x08000657                  2  Code  Wk  stm32f407xx_Vectors.o
   CAN1_RX0_IRQHandler        0x08000689                  2  Code  Wk  stm32f407xx_Vectors.o
   CAN1_RX1_IRQHandler        0x0800068B                  2  Code  Wk  stm32f407xx_Vectors.o
@@ -269,13 +269,13 @@ Function symbols by name:
   I2C1_EV_IRQHandler         0x0800069F                  2  Code  Wk  stm32f407xx_Vectors.o
   I2C1_StartGen              0x0800044B          34      2  Code  Gb  main.o
   I2C1_StopGen               0x0800046D          18      2  Code  Gb  main.o
-  I2C1_Tx_DeviceADDR         0x08000827          72      2  Code  Gb  main.o
+  I2C1_Tx_DeviceADDR         0x0800095F          72      2  Code  Gb  main.o
   I2C2_ER_IRQHandler         0x080006A5                  2  Code  Wk  stm32f407xx_Vectors.o
   I2C2_EV_IRQHandler         0x080006A3                  2  Code  Wk  stm32f407xx_Vectors.o
   I2C3_ER_IRQHandler         0x080006F3                  2  Code  Wk  stm32f407xx_Vectors.o
   I2C3_EV_IRQHandler         0x080006F1                  2  Code  Wk  stm32f407xx_Vectors.o
   I2C_Init                   0x08000375         214      2  Code  Gb  main.o
-  I2C_Read                   0x0800086F         212      2  Code  Gb  main.o
+  I2C_Read                   0x080009A7         212      2  Code  Gb  main.o
   I2C_Write                  0x080004A3         154      2  Code  Gb  main.o
   MemManage_Handler          0x08000655                  2  Code  Wk  stm32f407xx_Vectors.o
   NMI_Handler                0x08000653                  2  Code  Wk  stm32f407xx_Vectors.o
@@ -450,9 +450,9 @@ Function symbols by address:
   0x080006FF  HASH_RNG_IRQHandler                        2  Code  Wk  stm32f407xx_Vectors.o
   0x08000701  FPU_IRQHandler                             2  Code  Wk  stm32f407xx_Vectors.o
   0x08000703  SystemCoreClockUpdate             292      2  Code  Gb  system_stm32f4xx.o
-  0x08000827  I2C1_Tx_DeviceADDR                 72      2  Code  Gb  main.o
-  0x0800086F  I2C_Read                          212      2  Code  Gb  main.o
-  0x08000943  BTN_Check                         312      2  Code  Gb  main.o
+  0x08000827  BTN_Check                         312      2  Code  Gb  main.o
+  0x0800095F  I2C1_Tx_DeviceADDR                 72      2  Code  Gb  main.o
+  0x080009A7  I2C_Read                          212      2  Code  Gb  main.o
   0x08000A7B  State_Flag_Gen                    176      2  Code  Gb  main.o
   0x08000B2B  SysTick_Handler                    16      2  Code  Gb  main.o
   0x08000B3B  RCC_Init                          220      2  Code  Gb  RCC_init.o

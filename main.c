@@ -13,7 +13,6 @@ I2C project for lesson
 #include "stm32f407xx.h"
 
 
-#define COUNT_1MS 1000
 #define	BTN_PRESS_CNT 4 
 
 
@@ -151,6 +150,51 @@ void I2C_Init(void){
 }
 
 
+void BTN_Check(void){
+	if ( ms_count > BTN_CHECK_MS){
+		ms_count = 0;
+		// Опрос кнопки S1
+		if ((GPIOE->IDR & GPIO_IDR_ID10) == 0) {  // if S1 pressed
+			if(S1_cnt < BTN_PRESS_CNT){  
+				S1_cnt++;
+				S1_state = 0;	// считаем кнопку S1 не нажатой
+			}
+			else S1_state = 1;	// считаем кнопку S1 нажатой
+		}
+		else{                   // if S1 released
+			S1_state = 0;	// считаем кнопку S1 не нажатой
+			S1_cnt = 0;
+		}
+		
+		// Опрос кнопки S2
+		if ((GPIOE->IDR & GPIO_IDR_ID11) == 0) {  // if S2 pressed
+			if(S2_cnt < BTN_PRESS_CNT){
+				S2_cnt++;
+				S2_state = 0;
+			}
+			else S2_state = 1;
+		}
+		else{                   // if S2 released
+			S2_state = 0;
+			S2_cnt = 0;
+		}
+		
+		// Опрос кнопки S3
+		if ((GPIOE->IDR & GPIO_IDR_ID12) == 0) {  // if S3 pressed
+			if(S3_cnt < BTN_PRESS_CNT){
+				S3_cnt++;
+				S3_state = 0;
+			}
+			else S3_state = 1;
+		}
+		else{                   // if S3 released
+			S3_state = 0;
+			S3_cnt = 0;
+		}
+
+	}
+ }
+
 
 void I2C1_StartGen(void){
 	I2C1->CR1  |=  I2C_CR1_START;
@@ -193,7 +237,7 @@ void I2C1_Tx_DeviceADDR(char device_address, char RW_bit){
 /* в случае EEPROM AT24C02B можно за раз записать не более 8 байт данных. 
 т.к. размер страницы всего 8 байт. И если запись доходит до конца страницы,
 то следующий байт пишется в первый адрес текущей страницы. 
-Таким образом, данные там могут быть повреждены / перезаписаны.
+Таким образом, данные могут быть повреждены / перезаписаны.
 */
 void I2C_Write(char start_addr, char data[], uint16_t data_len){ // запись в EEPROM указанного массива, указанной длинны, с указанного адреса  
 	
@@ -303,50 +347,7 @@ void I2C_Read(char start_addr, char rd_data[], uint16_t data_len){  // чтен�
 
 
 
- void BTN_Check(void){
-	if ( ms_count > BTN_CHECK_MS){
-		ms_count = 0;
-		// Опрос кнопки S1
-		if ((GPIOE->IDR & GPIO_IDR_ID10) == 0) {  // if S1 pressed
-			if(S1_cnt < BTN_PRESS_CNT){  
-				S1_cnt++;
-				S1_state = 0;	// считаем кнопку S1 не нажатой
-			}
-			else S1_state = 1;	// считаем кнопку S1 нажатой
-		}
-		else{                   // if S1 released
-			S1_state = 0;	// считаем кнопку S1 не нажатой
-			S1_cnt = 0;
-		}
-		
-		// Опрос кнопки S2
-		if ((GPIOE->IDR & GPIO_IDR_ID11) == 0) {  // if S2 pressed
-			if(S2_cnt < BTN_PRESS_CNT){
-				S2_cnt++;
-				S2_state = 0;
-			}
-			else S2_state = 1;
-		}
-		else{                   // if S2 released
-			S2_state = 0;
-			S2_cnt = 0;
-		}
-		
-		// Опрос кнопки S3
-		if ((GPIOE->IDR & GPIO_IDR_ID12) == 0) {  // if S3 pressed
-			if(S3_cnt < BTN_PRESS_CNT){
-				S3_cnt++;
-				S3_state = 0;
-			}
-			else S3_state = 1;
-		}
-		else{                   // if S3 released
-			S3_state = 0;
-			S3_cnt = 0;
-		}
-
-	}
- }
+ 
 
 
 void State_Flag_Gen(void){
@@ -379,8 +380,8 @@ int main(void) {
 
 	enum states FSM_state = IDLE;
 
-  	char eeprom_addr = 0;	// адрес чтения и записи в EEPROM
-  	char addr_offset = 0;	// смещение адреса EEPROM относительно основного адреса EEPROM_RD_ADDR
+  	char eeprom_addr = 0;	// адрес чтения и записи в EEPROM, передаем по I2C
+  	char addr_offset = 0;	// смещение адреса EEPROM относительно начального адреса EEPROM_RD_ADDR
   	
   	
   	RCC_Init();
@@ -390,9 +391,9 @@ int main(void) {
   	I2C_Init();
   	
   	
-  	SysTick_Config(168000);	// настройка SysTick таймера на время отрабатывания = 1 мс
-								// 168000 = (частота_с_PLL / время_отрабатывания_таймера_в_мкс)
-								// 168000 = 168 МГц / 1000 мкс; 
+  	SysTick_Config(84000);		// настройка SysTick таймера на время отрабатывания = 1 мс
+								// 84000 = (AHB_freq / время_отрабатывания_таймера_в_мкс)
+								// 84000 = 84_000_000 Гц / 1000 мкс; 
    
 	//---- turn off leds ---------- 
 	GPIOE -> BSRR |= GPIO_BSRR_BS13;
